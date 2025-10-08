@@ -1,0 +1,86 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 10%;
+  background: #fff; /* White header */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo a {
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #222;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Login/Register buttons */
+.btn-primary {
+  padding: 10px 20px;
+  background: #222;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.btn-primary:hover {
+  background: #555;
+}
+
+/* User menu */
+.user-menu {
+  position: relative;
+}
+
+/* Initials circle */
+.user-initials {
+  width: 40px;
+  height: 40px;
+  background: #222;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* Dropdown */
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  z-index: 1000;
+}
+
+.dropdown a,
+.dropdown .logout {
+  padding: 10px 15px;
+  text-decoration: none;
+  color: #222; /* visible dark text */
+  transition: background 0.3s;
+}
+
+.dropdown a:hover,
+.dropdown .logout:hover {
+  background: #f0f0f0;
+}

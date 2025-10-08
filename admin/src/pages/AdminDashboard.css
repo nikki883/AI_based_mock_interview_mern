@@ -1,0 +1,33 @@
+
+.admin-dashboard {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+.admin-dashboard h2 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.admin-dashboard button {
+  padding: 6px 12px;
+  margin: 5px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+.admin-dashboard button:hover {
+  opacity: 0.9;
+}
+.users-list {
+  margin-top: 30px;
+}
+.user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  background: #f1f1f1;
+  border-radius: 8px;
+}

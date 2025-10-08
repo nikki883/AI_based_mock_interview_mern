@@ -1,0 +1,50 @@
+.department-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  background: #f5f5f5;
+  padding: 40px 20px;
+}
+
+.department-form {
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.department-form h2 {
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  color: #222;
+}
+
+.department-form select {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #222;
+}
+
+.btn-submit {
+  padding: 12px 25px;
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-submit:hover {
+  background: #555;
+}
