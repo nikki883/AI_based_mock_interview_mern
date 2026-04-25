@@ -1,23 +1,29 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { AdminAuthProvider } from "./context/AdminAuthContext.jsx";
-import AdminLogin from "./pages/AdminLogin.jsx";
-import AdminDashboard from "./pages/AdminDashboard.jsx";
+import React, { useContext } from "react";
+import { BrowserRouter as Router } from "react-router-dom";
+import { AdminAuthProvider, AdminAuthContext } from "./context/AdminAuthContext.jsx";
+import Sidebar from "./components/Sidebar.jsx";
+import AdminRoutes from "./router/AdminRoutes.jsx";
+
+function Layout() {
+  const { isAuthenticated } = useContext(AdminAuthContext);
+
+  return isAuthenticated ? (
+    <div style={{ display: "flex", minHeight: "100vh" }}>
+      <Sidebar />
+      <div style={{ flex: 1, padding: "20px", marginLeft: "230px" }}>
+        <AdminRoutes />
+      </div>
+    </div>
+  ) : (
+    <AdminRoutes />
+  );
+}
 
 function App() {
   return (
     <AdminAuthProvider>
       <Router>
-        <Routes>
-          {/* Redirect root URL to /login */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          
-          {/* Admin login route */}
-          <Route path="/login" element={<AdminLogin />} />
-
-          {/* Admin dashboard route */}
-          <Route path="/dashboard" element={<AdminDashboard />} />
-        </Routes>
+        <Layout />
       </Router>
     </AdminAuthProvider>
   );

@@ -5,55 +5,51 @@ import "./AdminLogin.css";
 
 function AdminLogin() {
   const navigate = useNavigate();
-  const { loginAdmin } = useContext(AdminAuthContext);
+  const { login } = useContext(AdminAuthContext);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:5500/api/admin/login", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
+      if (!data.success) return setError(data.message);
 
-      if (!res.ok) {
-        setError(data.message || "Login failed");
-        return;
-      }
-
-      loginAdmin(data.admin, data.token);
-      navigate("/dashboard");
-    } catch (err) {
-      setError("Server error, make sure backend is running on port 5500");
-      console.error(err);
+      login(data.token);
+      navigate("/admin/dashboard");
+    } catch {
+      setError("Login failed");
     }
   };
 
   return (
     <div className="login-container">
-      <form onSubmit={handleSubmit}>
+      <form className="login-box" onSubmit={handleLogin}>
         <h2>Admin Login</h2>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+        <input 
+          type="email" 
+          placeholder="Admin Email" 
+          value={email} 
+          onChange={(e) => setEmail(e.target.value)} 
+          required 
         />
-        <input
-          type="password"
-          placeholder="Password"
+        <input 
+          type="password" 
+          placeholder="Password" 
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          onChange={(e) => setPassword(e.target.value)} 
+          required 
         />
         <button type="submit">Login</button>
+        {error && <p className="err">{error}</p>}
       </form>
     </div>
   );

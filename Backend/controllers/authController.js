@@ -276,3 +276,20 @@ export const updateLastActive = async (req, res, next) => {
 }
 
 
+// Reset Password
+export async function resetPassword(email, newPassword) {
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    return { success: true, message: "Password reset successful" };
+  } catch (err) {
+    return { success: false, message: "Server error" };
+  }
+}

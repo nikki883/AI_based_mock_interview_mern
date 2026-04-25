@@ -2,30 +2,24 @@ import React, { createContext, useState } from "react";
 
 export const AdminAuthContext = createContext();
 
-export const AdminAuthProvider = ({ children }) => {
-  const [admin, setAdmin] = useState(() => {
-    const stored = localStorage.getItem("admin");
-    return stored ? JSON.parse(stored) : null;
-  });
-  const [token, setToken] = useState(() => localStorage.getItem("adminToken") || "");
+export function AdminAuthProvider({ children }) {
+  const [admin, setAdmin] = useState(localStorage.getItem("adminToken") || null);
 
-  const loginAdmin = (adminData, jwtToken) => {
-    setAdmin(adminData);
-    setToken(jwtToken);
-    localStorage.setItem("admin", JSON.stringify(adminData));
-    localStorage.setItem("adminToken", jwtToken);
+  const login = (token) => {
+    localStorage.setItem("adminToken", token);
+    setAdmin(token);
   };
 
-  const logoutAdmin = () => {
-    setAdmin(null);
-    setToken("");
-    localStorage.removeItem("admin");
+  const logout = () => {
     localStorage.removeItem("adminToken");
+    setAdmin(null);
   };
+
+  const isAuthenticated = !!admin;
 
   return (
-    <AdminAuthContext.Provider value={{ admin, token, loginAdmin, logoutAdmin }}>
+    <AdminAuthContext.Provider value={{ admin, login, logout, isAuthenticated }}>
       {children}
     </AdminAuthContext.Provider>
   );
-};
+}

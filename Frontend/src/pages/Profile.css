@@ -1,0 +1,168 @@
+.profile-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  font-family: "Poppins", sans-serif;
+}
+
+.profile-card {
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.profile-pic {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #007bff;
+}
+
+.upload-form {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.upload-form input {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  border-radius: 6px;
+}
+
+.upload-form button {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.upload-form button:hover {
+  background: #005fcc;
+}
+
+.profile-section {
+  margin-bottom: 1rem;
+}
+
+.profile-section h3 {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.editable-text {
+  cursor: pointer;
+  background: #f9fafb;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.editable-text:hover {
+  background: #e9ecef;
+}
+
+.edit-field {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-field input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.edit-field button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.interview-history {
+  background: #fafafa;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.interview-history h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #007bff;
+  display: inline-block;
+  padding-bottom: 4px;
+}
+
+.interview-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  padding: 1rem 1.2rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  transition: 0.2s;
+}
+
+.interview-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.interview-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.interview-date {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.feedback-item {
+  background: #f8f9fb;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 0.7rem;
+}
+
+.feedback-item p {
+  margin: 0.2rem 0;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #444;
+  margin-top: 0.4rem;
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+
+
+

@@ -5,15 +5,24 @@ import User from "../models/User.js"
 
 export const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select("-password")
-    if (!user) return res.status(404).json({ error: "User not found" })
+    const user = await User.findById(req.user._id)
+      .populate({
+        path: "interviews",
+        select: "department subject createdAt completed",
+        options: { sort: { createdAt: -1 } },
+      })
+      .lean();
 
-    res.json({ user })
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ user });
   } catch (error) {
-    console.error("Error fetching user profile:", error)
-    res.status(500).json({ error: "Server error" })
+    console.error("Error fetching profile:", error);
+    res.status(500).json({ error: "Failed to fetch profile" });
   }
-}
+};
 
 
 export const changePassword = async (req, res) => {
@@ -64,72 +73,34 @@ export const changePassword = async (req, res) => {
   }
 }
 
-// Upload profile picture
-// export const uploadProfilePicture = async (req, res) => {
-//   try {
-//     if (!req.file) {
-//       return res.status(400).json({ message: "No file uploaded" })
-//     }
-
-//     const result = await cloudinary.uploader.upload(req.file.path, {
-//       folder: "profile_pictures",
-//       transformation: [{ width: 400, height: 400, crop: "fill" }],
-//     })
-
-//     // Update user profile with the new image URL
-//     const updatedUser = await User.findByIdAndUpdate(
-//       req.user._id,
-//       { profilePic: result.secure_url },
-//       { new: true },
-//     ).select("-password")
-
-//     res.status(200).json({
-//       message: "Profile picture uploaded successfully",
-//       profilePic: result.secure_url,
-//       user: updatedUser,
-//     })
-//   } catch (error) {
-//     console.error("Error uploading profile picture:", error)
-//     res.status(500).json({ message: "Failed to upload profile picture" })
-//   }
-// }
-
 export const uploadProfilePicture = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    // Find user first
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    // If user already has profile pic, remove from cloudinary
+    // Delete old picture if exists
     if (user.profilePicId) {
       await cloudinary.uploader.destroy(user.profilePicId);
     }
 
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "profile_pictures",
-      transformation: [{ width: 400, height: 400, crop: "fill" }],
-    });
-
-    user.profilePic = result.secure_url;
-    user.profilePicId = result.public_id; // store public_id for future deletions
+    // ✅ File uploaded to Cloudinary by multer
+    user.profilePic = req.file.path; // Cloudinary image URL
+    user.profilePicId = req.file.filename; // Cloudinary public_id
     await user.save();
 
     res.status(200).json({
       message: "Profile picture uploaded successfully",
-      profilePic: user.profilePic,
-      user: { _id: user._id, email: user.email, profilePic: user.profilePic },
+      user,
     });
   } catch (error) {
     console.error("Error uploading profile picture:", error);
     res.status(500).json({ error: "Failed to upload profile picture" });
   }
 };
-
-
 
 export const updateEmail = async (req, res) => {
   try {

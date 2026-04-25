@@ -1,33 +1,33 @@
+.dashboard h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
 
-.admin-dashboard {
-  max-width: 800px;
-  margin: 50px auto;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-}
-.admin-dashboard h2 {
-  text-align: center;
-  margin-bottom: 30px;
-}
-.admin-dashboard button {
-  padding: 6px 12px;
-  margin: 5px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-}
-.admin-dashboard button:hover {
-  opacity: 0.9;
-}
-.users-list {
-  margin-top: 30px;
-}
-.user-item {
+.stats-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 15px;
-  margin-bottom: 10px;
-  background: #f1f1f1;
-  border-radius: 8px;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: #e6f0ff;
+  flex: 1;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card h3 {
+  color: #1e3a8a;
+  margin-bottom: 8px;
+}
+
+.chart-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  max-width: 700px;
 }

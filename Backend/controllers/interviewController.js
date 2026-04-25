@@ -4,6 +4,7 @@ import { generateQuestions } from "../services/questionService.js";
 import { evaluateAnswer } from "../services/aiEvaluationService.js";
 
 
+
 export const startInterview = async (req, res) => {
   try { 
     const { department, subject } = req.body;
@@ -26,10 +27,10 @@ export const startInterview = async (req, res) => {
       question: q,
       answer: "", 
       evaluation: {
-        confidence: 0,
         fluency: 0,
         technicalAccuracy: 0,
-        grammar: 0
+        grammar: 0,
+        feedback: ""
       }
     }));
 
@@ -103,10 +104,10 @@ export const submitAnswer = async (req, res) => {
       // Update question with answer and evaluation
     interview.questions[currentIndex].answer = answer;
     interview.questions[currentIndex].evaluation = {
-      confidence: scores.confidence || 0,
       fluency: scores.fluency || 0,
       technicalAccuracy: scores.technicalAccuracy || 0,
-      grammar: scores.grammar || 0
+      grammar: scores.grammar || 0,
+      feedback: scores.feedback || ""
     };
 
     // Move to next question
@@ -170,7 +171,6 @@ export const endInterview = async (req, res) => {
       return res.json({
         success: true,
         overall: {
-          confidence: 0,
           fluency: 0,
           technicalAccuracy: 0,
           grammar: 0
@@ -182,13 +182,11 @@ export const endInterview = async (req, res) => {
 
      // Calculate averages based on answered questions only
     const total = answeredQuestions.length;
-    const avgConfidence = answeredQuestions.reduce((acc, q) => acc + (q.evaluation?.confidence || 0), 0) / total;
     const avgFluency = answeredQuestions.reduce((acc, q) => acc + (q.evaluation?.fluency || 0), 0) / total;
     const avgTech = answeredQuestions.reduce((acc, q) => acc + (q.evaluation?.technicalAccuracy || 0), 0) / total;
     const avgGrammar = answeredQuestions.reduce((acc, q) => acc + (q.evaluation?.grammar || 0), 0) / total;
 
     const overall = {
-      confidence: Number(avgConfidence.toFixed(1)),
       fluency: Number(avgFluency.toFixed(1)),
       technicalAccuracy: Number(avgTech.toFixed(1)),
       grammar: Number(avgGrammar.toFixed(1))
@@ -207,10 +205,10 @@ export const endInterview = async (req, res) => {
         questionNumber: index + 1,
         question: q.question,
         answer: q.answer || "Not answered",
-        confidence: q.evaluation?.confidence || 0,
         fluency: q.evaluation?.fluency || 0,
         technicalAccuracy: q.evaluation?.technicalAccuracy || 0,
-        grammar: q.evaluation?.grammar || 0
+        grammar: q.evaluation?.grammar || 0,
+        feedback: q.evaluation?.feedback || ""
       })),
       totalQuestions: interview.questions.length,
       answeredQuestions: answeredQuestions.length
@@ -251,5 +249,24 @@ export const getLatestInterview = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Error fetching latest interview" });
+  }
+};
+
+export const getAllUserInterviews = async (req, res) => {
+  try {
+    const interviews = await Interview.find({ userId: req.user._id })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      interviews,
+    });
+  } catch (error) {
+    console.error("Error fetching user interviews:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch interviews",
+    });
   }
 };

@@ -50,6 +50,7 @@ app.use("/api/department", departmentRoutes);
 // app.use("/api/admin/auth", adminAuthRoutes)
 app.use("/api/admin", adminRoutes);
 
+
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" })
 })

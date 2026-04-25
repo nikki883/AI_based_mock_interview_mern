@@ -1,66 +1,74 @@
-import React, { useEffect, useState, useContext } from "react";
-import { AdminAuthContext } from "../context/AdminAuthContext.jsx";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./AdminDashboard.css";
+import {
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
+
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 function AdminDashboard() {
-  const { admin, token, logoutAdmin } = useContext(AdminAuthContext);
-  const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
+  const [usersCount, setUsersCount] = useState(0);
+  const [interviewsCount, setInterviewsCount] = useState(0);
+  const [activeUsers, setActiveUsers] = useState(0);
+  const [inactiveUsers, setInactiveUsers] = useState(0);
 
   useEffect(() => {
-    if (!admin) return navigate("/login");
-    fetchUsers();
-  }, [admin, navigate]);
+    const token = localStorage.getItem("adminToken");
+    const headers = { Authorization: `Bearer ${token}` };
 
-  const fetchUsers = async () => {
-    try {
-      const res = await axios.get("http://localhost:5500/api/admin/users", {
-        headers: { Authorization: `Bearer ${token}` },
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/api/admin/stats`, { headers })
+      .then((res) => {
+        setUsersCount(res.data.totalUsers || 0);
+        setInterviewsCount(res.data.totalInterviews || 0);
       });
-      setUsers(res.data.users || []);
-    } catch (err) {
-      console.error("Error fetching users:", err);
-      if (err.response?.status === 401) {
-        alert("Session expired. Please login again.");
-        logoutAdmin();
-        navigate("/login");
-      }
-    }
-  };
 
-  const handleDeleteUser = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
-    try {
-      await axios.delete(`http://localhost:5500/api/admin/users/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+    // Example: fetching active/inactive user data
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/api/admin/users`, { headers })
+      .then((res) => {
+        const users = res.data.users || [];
+        const active = users.filter((u) => u.isActive).length;
+        setActiveUsers(active);
+        setInactiveUsers(users.length - active);
       });
-      fetchUsers();
-    } catch (err) {
-      console.error("Error deleting user:", err);
-    }
+  }, []);
+
+  const chartData = {
+    labels: ["Active Users", "Inactive Users"],
+    datasets: [
+      {
+        label: "User Activity",
+        data: [activeUsers, inactiveUsers],
+        backgroundColor: ["#3b82f6", "#ef4444"],
+      },
+    ],
   };
 
   return (
-    <div className="admin-dashboard">
-      <h2>Welcome, {admin?.name}</h2>
-      <button onClick={logoutAdmin}>Logout</button>
+    <div className="dashboard">
+      <h1>Admin Dashboard</h1>
+      <div className="stats-container">
+        <div className="stat-card">
+          <h3>Total Users</h3>
+          <p>{usersCount}</p>
+        </div>
+        <div className="stat-card">
+          <h3>Total Interviews</h3>
+          <p>{interviewsCount}</p>
+        </div>
+      </div>
 
-      <div className="users-list">
-        <h3>Registered Users</h3>
-        {users.length === 0 ? (
-          <p>No users found.</p>
-        ) : (
-          users.map((user) => (
-            <div key={user._id} className="user-item">
-              <p>
-                <strong>{user.name}</strong> ({user.email})
-              </p>
-              <button onClick={() => handleDeleteUser(user._id)}>Delete</button>
-            </div>
-          ))
-        )}
+      <div className="chart-container">
+        <h3>User Activity Chart</h3>
+        <Bar data={chartData} />
       </div>
     </div>
   );

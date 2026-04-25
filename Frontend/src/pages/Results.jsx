@@ -1,64 +1,3 @@
-// import { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import "./Results.css";
-
-// function Results() {
-//   const navigate = useNavigate();
-//   const [interview, setInterview] = useState(null);
-
-//   useEffect(() => {
-//     const fetchLatestInterview = async () => {
-//       const user = JSON.parse(localStorage.getItem("loggedInUser"));
-//       if (!user) {
-//         navigate("/login");
-//         return;
-//       }
-
-//       try {
-//         const res = await fetch(`http://localhost:5000/api/interview/user/${user._id}`);
-//         const data = await res.json();
-//         if (data.length === 0) {
-//           alert("No interview found!");
-//           navigate("/department");
-//           return;
-//         }
-
-//         // Get latest interview
-//         setInterview(data[0]);
-//       } catch (err) {
-//         console.error(err);
-//         alert("Error fetching results");
-//       }
-//     };
-
-//     fetchLatestInterview();
-//   }, [navigate]);
-
-//   if (!interview) return <p>Loading results...</p>;
-
-//   return (
-//     <div className="results-container">
-//       <h2>{interview.department} Interview Results</h2>
-//       <h3>Subject: {interview.subject}</h3>
-
-//       <ul>
-//         {interview.questions.map((q, idx) => (
-//           <li key={idx}>
-//             <strong>Q{idx + 1}: {q.question}</strong>
-//             <p>Answer: {q.answer || "No answer provided"}</p>
-//           </li>
-//         ))}
-//       </ul>
-
-//       {interview.score !== undefined && (
-//         <h3>Score: {interview.score}</h3>
-//       )}
-//     </div>
-//   );
-// }
-
-// export default Results;
-
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Results.css";
@@ -142,28 +81,26 @@ function Results() {
   const total = answeredQuestions.length || 1;
 
   const overall = {
-    confidence: (answeredQuestions.reduce((acc, q) => acc + (q.evaluation?.confidence || 0), 0) / total).toFixed(1),
     fluency: (answeredQuestions.reduce((acc, q) => acc + (q.evaluation?.fluency || 0), 0) / total).toFixed(1),
     technicalAccuracy: (answeredQuestions.reduce((acc, q) => acc + (q.evaluation?.technicalAccuracy || 0), 0) / total).toFixed(1),
     grammar: (answeredQuestions.reduce((acc, q) => acc + (q.evaluation?.grammar || 0), 0) / total).toFixed(1),
   };
 
   const overallAverage = (
-    (Number(overall.confidence) + Number(overall.fluency) +
-      Number(overall.technicalAccuracy) + Number(overall.grammar)) / 4
+    (Number(overall.fluency) +
+      Number(overall.technicalAccuracy) + Number(overall.grammar)) / 3
   ).toFixed(1);
 
   const metrics = [
-    { key: "confidence", label: "Confidence", value: Number(overall.confidence) },
     { key: "fluency", label: "Fluency", value: Number(overall.fluency) },
     { key: "technicalAccuracy", label: "Technical Accuracy", value: Number(overall.technicalAccuracy) },
     { key: "grammar", label: "Grammar", value: Number(overall.grammar) }
   ];
 
   function getColor(score) {
-    if (score >= 7) return "#28a745"; // Green
-    if (score >= 4) return "#ffc107"; // Yellow
-    return "#dc3545"; // Red
+    if (score >= 7) return "#28a745"; 
+    if (score >= 4) return "#ffc107"; 
+    return "#dc3545"; 
   }
 
   function getBadgeClass(score) {
@@ -214,10 +151,10 @@ function Results() {
             <p><strong>Question {idx + 1}:</strong> {q.question}</p>
             <p><strong>Your Answer:</strong> {q.answer || "No answer provided"}</p>
             <ul>
-              <li className={getBadgeClass(q.evaluation?.confidence || 0)}>Confidence: {q.evaluation?.confidence || 0}</li>
               <li className={getBadgeClass(q.evaluation?.fluency || 0)}>Fluency: {q.evaluation?.fluency || 0}</li>
               <li className={getBadgeClass(q.evaluation?.technicalAccuracy || 0)}>Technical Accuracy: {q.evaluation?.technicalAccuracy || 0}</li>
               <li className={getBadgeClass(q.evaluation?.grammar || 0)}>Grammar: {q.evaluation?.grammar || 0}</li>
+              <li className={getBadgeClass(q.evaluation?.feedback || 0)}>sample Answere: {q.evaluation?.feedback ||"no answere"}</li>
             </ul>
           </div>
         ))}
@@ -225,7 +162,7 @@ function Results() {
 
       <div className="results-actions">
         <button className="btn-primary" onClick={() => navigate("/department")}>Start New Interview</button>
-        <button className="btn-secondary" onClick={() => navigate("/dashboard")}>Back to Dashboard</button>
+        <button className="btn-secondary" onClick={() => navigate("/dashboard")}>Back to Home</button>
       </div>
     </div>
   );

@@ -1,0 +1,15 @@
+.user-card {
+  padding: 12px;
+  border: 1px solid #ddd;
+  margin-top: 8px;
+  border-radius: 8px;
+}
+.delete-btn {
+  float: right;
+  background: red;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}

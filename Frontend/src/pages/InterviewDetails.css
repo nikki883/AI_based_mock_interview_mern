@@ -1,0 +1,88 @@
+   .interview-details-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.interview-details-container h2 {
+  color: #0077ff;
+  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+}
+
+.interview-details-container p {
+  font-size: 1rem;
+  margin: 0.4rem 0;
+  color: #555;
+}
+
+.interview-details-container h3 {
+  margin-top: 2rem;
+  font-size: 1.4rem;
+  color: #222;
+  border-bottom: 2px solid #0077ff;
+  display: inline-block;
+  padding-bottom: 0.3rem;
+}
+
+.qa-section {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.qa-item {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  transition: all 0.3s ease;
+  border-left: 4px solid #0077ff;
+}
+
+.qa-item:hover {
+  background: #eef5ff;
+  transform: translateY(-3px);
+}
+
+.qa-item p {
+  margin: 0.4rem 0;
+  line-height: 1.5;
+}
+
+.qa-item strong {
+  color: #222;
+}
+
+.interview-loading,
+.interview-error {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #777;
+  padding: 2rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .interview-details-container {
+    padding: 1.5rem;
+  }
+
+  .qa-item {
+    padding: 1rem;
+  }
+
+  .interview-details-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .interview-details-container h3 {
+    font-size: 1.2rem;
+  }
+}

@@ -4,10 +4,10 @@ const questionSchema = new mongoose.Schema({
   question: { type: String, required: true },
   answer: { type: String, default: "" },
   evaluation: {
-    confidence: { type: Number, default: 0 },
     fluency: { type: Number, default: 0 },
     technicalAccuracy: { type: Number, default: 0 },
     grammar: { type: Number, default: 0 },
+    feedback: { type: String, default: "" },
   },
 });
 

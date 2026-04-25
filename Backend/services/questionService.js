@@ -1,38 +1,3 @@
-// import { GoogleGenerativeAI } from "@google/generative-ai";
-
-// const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
-
-// export const generateQuestions = async (department, subject) => {
-//   try {
-//     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
-//     const prompt = `
-//       Generate 5 technical interview questions for a candidate
-//       applying in the ${department} department, focusing on ${subject}.
-//       Return the questions as a plain JSON array of strings, no extra text.
-//     `;
-
-//     const result = await model.generateContent(prompt);
-//     const text = result.response.text();
-
-//     // Try to parse clean JSON (Gemini sometimes adds formatting)
-//     let questions;
-//     try {
-//       questions = JSON.parse(text);
-//     } catch (err) {
-//       console.warn("Parsing Gemini output failed, fallback to text split");
-//       questions = text.split("\n").filter(q => q.trim());
-//     }
-
-//     return questions;
-//   } catch (error) {
-//     console.error("Error generating questions:", error);
-//     return [];
-//   }
-// };
-
-
-
 import 'dotenv/config';
 import { GoogleGenerativeAI } from "@google/generative-ai"; 
 
@@ -44,6 +9,7 @@ const model = genAI.getGenerativeModel({
         You are an expert technical interviewer.
         Generate exactly 5 technical interview questions based on the
         department and subject provided.
+        ask short questions whose ans will be completed in 2 to 4 sentences
         Return questions strictly as a JSON array of strings.
         DO NOT include any markdown, code blocks, or extra text.
     `

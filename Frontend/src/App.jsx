@@ -14,8 +14,10 @@ import Department from "./pages/Department";
 import Subject from "./pages/Subject";
 import Interview from "./pages/Interview";
 import Results from "./pages/Results";
-
+import Profile from "./pages/Profile.jsx";
 import AuthContext from "./context/AuthContext.jsx";
+import InterviewDetails from "./pages/InterviewDetails.jsx";
+import ResetPassword from "./pages/ResetPassword";
 
 // ProtectedRoute: sirf logged-in users ke liye
 function ProtectedRoute({ children }) {
@@ -70,7 +72,7 @@ function App() {
         <Route path="/faq" element={<FAQ />} />
         <Route path="/help" element={<HelpCenter />} />
         <Route path="/blog" element={<Blog />} /> 
-
+        <Route path="/reset-password" element={<ResetPassword />} />
         {/* Protected Routes */}
         <Route
           path="/department"
@@ -113,7 +115,15 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+      <Route
+  path="/profile"
+  element={
+    <ProtectedRoute>
+      <Profile />
+    </ProtectedRoute>
+  }
+/>
+  <Route path="/interview/:id" element={<InterviewDetails />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
       <Footer />

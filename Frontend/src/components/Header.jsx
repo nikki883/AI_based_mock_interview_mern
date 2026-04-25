@@ -9,6 +9,7 @@ function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
 
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -19,12 +20,14 @@ function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Logout handler
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem("user");
     navigate("/login");
   };
 
+  // Get initials for user avatar circle
   const getInitials = (name) => {
     if (!name) return "";
     return name
@@ -41,14 +44,14 @@ function Header() {
       <div className="logo">
         <Link to="/">⚡ PrepAI</Link>
       </div>
+
       <nav className="nav">
-        {!user && (
+        {!user ? (
           <>
             <Link to="/login" className="btn-primary">Login</Link>
             <Link to="/register" className="btn-primary">Register</Link>
           </>
-        )}
-        {user && (
+        ) : (
           <div className="user-menu" ref={dropdownRef}>
             <span
               className="user-initials"
@@ -56,10 +59,12 @@ function Header() {
             >
               {getInitials(user.name)}
             </span>
+
             {dropdownOpen && (
               <div className="dropdown">
-                <span>Hello, {user.name}</span>
-                <Link to="/department">Select Department/Post</Link>
+                <span className="dropdown-greet">👋 Hello, {user.name}</span>
+                <Link to="/profile">Profile</Link>
+                <Link to="/department">Department / Post</Link>
                 <Link to="/results">Results</Link>
                 <Link to="/reset-password">Reset Password</Link>
                 <span className="logout" onClick={handleLogout}>Logout</span>

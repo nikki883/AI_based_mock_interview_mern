@@ -1,64 +1,16 @@
-// import { GoogleGenerativeAI } from "@google/generative-ai";
+//
+//import 'dotenv/config';
+//import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_KEY);
+//const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_KEY1);
 
-// export const evaluateAnswer = async (question, answer) => {
-//   try {
-//     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
-//     const prompt = `
-//       You are an AI interview evaluator.
-//       Question: "${question}"
-//       Candidate's Answer: "${answer}"
-
-//       Evaluate the answer strictly on these criteria (0-10 scale for each):
-//       - grammar
-//       - technicalAccuracy
-//       - confidence
-
-//       Return a JSON object only, like:
-//       {
-//         "grammar": 7,
-//         "technicalAccuracy": 8,
-//         "confidence": 6
-//       }
-//     `;
-
-//     const result = await model.generateContent(prompt);
-//     const text = result.response.text();
-
-//     let evaluation;
-//     try {
-//       evaluation = JSON.parse(text);
-//     } catch (err) {
-//       console.warn("Evaluation parse failed, fallback to defaults");
-//       evaluation = {
-//         grammar: 0,
-//         technicalAccuracy: 0,
-//         confidence: 0,
-//       };
-//     }
-
-//     return evaluation;
-//   } catch (error) {
-//     console.error("Error evaluating answer:", error);
-//     return { grammar: 0, technicalAccuracy: 0, confidence: 0 };
-//   }
-// };
-
-
-import 'dotenv/config';
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_KEY);
-
-// Verify API key is loaded
-if (!process.env.GOOGLE_GEMINI_KEY) {
-  console.error("❌ GOOGLE_GEMINI_KEY is not set in .env file!");
-} else {
-  console.log("✅ Gemini API Key loaded");
-}
-
+// Verify API key
+//if (!process.env.GOOGLE_GEMINI_KEY1) {
+ // console.error("❌ GOOGLE_GEMINI_KEY is not set in .env file!");
+//} else {
+//  console.log("✅ Gemini API Key loaded");
+//}
+/*
 const model = genAI.getGenerativeModel({ 
   model: "gemini-2.0-flash-exp",
   generationConfig: {
@@ -67,133 +19,237 @@ const model = genAI.getGenerativeModel({
     topK: 40,
   }
 });
+*/
+//function extractJSON(text) {
+// text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '');
+//  const jsonMatch = text.match(/\{[\s\S]*\}/);
+//  return jsonMatch ? jsonMatch[0] : text;
+// }
 
-// Helper function to extract JSON from text
-function extractJSON(text) {
-  // Remove markdown code blocks
-  text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '');
-  
-  // Try to find JSON object
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (jsonMatch) {
-    return jsonMatch[0];
-  }
-  
-  return text;
-}
+/*function normalizeScores(obj) {
+  const valueOrZero = (val) => {
+    const num = Number(val);
+    return isNaN(num) ? 0 : Math.min(Math.max(num, 0), 10);
+  };
 
-// Helper function to normalize score keys
-function normalizeScores(obj) {
-  const normalized = {};
-  
-  for (let key in obj) {
-    const lowerKey = key.toLowerCase();
-    const value = Number(obj[key]) || 0;
-    const clampedValue = Math.min(Math.max(value, 0), 10);
-    
-    if (lowerKey.includes('confidence')) {
-      normalized.confidence = clampedValue;
-    } else if (lowerKey.includes('fluency')) {
-      normalized.fluency = clampedValue;
-    } else if (lowerKey.includes('technical')) {
-      normalized.technicalAccuracy = clampedValue;
-    } else if (lowerKey.includes('grammar')) {
-      normalized.grammar = clampedValue;
-    }
-  }
-  
-  // Fill missing values with 5 (neutral)
-  normalized.confidence = normalized.confidence ?? 5;
-  normalized.fluency = normalized.fluency ?? 5;
-  normalized.technicalAccuracy = normalized.technicalAccuracy ?? 5;
-  normalized.grammar = normalized.grammar ?? 5;
-  
-  return normalized;
+  return {
+    fluency: valueOrZero(obj.fluency),
+    technicalAccuracy: valueOrZero(obj.technicalAccuracy),
+    grammar: valueOrZero(obj.grammar),
+    feedback: obj.feedback || "Answer incomplete or missing key technical points."
+  };
 }
 
 export const evaluateAnswer = async (question, answer) => {
   try {
     if (!question || !answer) {
-      console.warn("Missing question or answer");
       return {
-        confidence: 5,
-        fluency: 5,
-        technicalAccuracy: 5,
-        grammar: 5
+        fluency: 0,
+        technicalAccuracy: 0,
+        grammar: 0,
+        feedback: "No answer provided. Candidate did not respond."
       };
     }
 
-    const prompt = `Evaluate this interview answer. Return ONLY a JSON object with these exact keys:
+    const prompt = `
+You are a strict technical evaluator.
+
+Your job is to grade the candidate's answer **only** based on correctness, completeness, and clarity — 
+not politeness or effort. Be extremely objective and critical.
+
+Return ONLY a JSON object with these keys:
+- fluency: 0–10
+- technicalAccuracy: 0–10
+- grammar: 0–10
+- feedback: short and correct answer to the question (no remarks, no evaluation, no extra text)
+
+Evaluation Rules:
+1. If the answer is blank, nonsense, irrelevant, off-topic, copied from the question, or includes phrases like:
+   "I don't know", "idk", "no idea", "not sure", "maybe", "can't remember", or any vague hesitation — 
+   give **0 marks** for *all* categories.
+2. If the answer is partially correct but misses major parts of the question → **fluency: 4–6**, 
+   **technicalAccuracy: 3–5**, **grammar: 4–6**.
+3. If the answer is completely correct, clear, and well-written → **8–10** for all.
+4. Do **not** give 5 marks by default. 
+   Only assign marks according to the above rules.
+5. The "feedback" should be the correct and complete answer to the question, not feedback about the user.
+6. Always output a valid JSON only — no markdown, no explanations.
 
 Question: ${question}
 
 Answer: ${answer}
 
-Required JSON format (no extra text):
+Example response:
 {
-  "confidence": <number 0-10>,
-  "fluency": <number 0-10>,
-  "technicalAccuracy": <number 0-10>,
-  "grammar": <number 0-10>
-}
-
-Scoring guide:
-- confidence: How assertive and sure the answer sounds (0=very unsure, 10=very confident)
-- fluency: How smooth and natural the answer flows (0=choppy, 10=very fluent)
-- technicalAccuracy: How correct the technical content is (0=wrong, 10=perfectly correct)
-- grammar: Sentence structure and language quality (0=many errors, 10=perfect grammar)`;
-
-    console.log("\n=== Evaluating Answer ===");
-    console.log("Question:", question.substring(0, 100) + "...");
-    console.log("Answer:", answer.substring(0, 100) + "...");
+  "fluency": 7,
+  "technicalAccuracy": 6,
+  "grammar": 8,
+  "feedback":  "Correct answer to the question here"
+`;
 
     const result = await model.generateContent(prompt);
     let text = result.response.text().trim();
-
-    console.log("\n=== Raw Gemini Response ===");
-    console.log(text);
-    console.log("========================\n");
-
-    // Extract JSON from response
     const jsonText = extractJSON(text);
-    console.log("Extracted JSON:", jsonText);
 
     let evaluation;
     try {
       const parsed = JSON.parse(jsonText);
       evaluation = normalizeScores(parsed);
-      console.log("✅ Parsed evaluation:", evaluation);
-    } catch (parseErr) {
-      console.error("❌ JSON parse failed:", parseErr.message);
-      console.log("Attempting alternative parsing...");
-      
-      // Try to extract numbers using regex as fallback
-      const confidenceMatch = text.match(/confidence['":\s]+(\d+)/i);
-      const fluencyMatch = text.match(/fluency['":\s]+(\d+)/i);
-      const technicalMatch = text.match(/technical[^:]*['":\s]+(\d+)/i);
-      const grammarMatch = text.match(/grammar['":\s]+(\d+)/i);
-      
+    } catch {
       evaluation = {
-        confidence: confidenceMatch ? Math.min(Number(confidenceMatch[1]), 10) : 5,
-        fluency: fluencyMatch ? Math.min(Number(fluencyMatch[1]), 10) : 5,
-        technicalAccuracy: technicalMatch ? Math.min(Number(technicalMatch[1]), 10) : 5,
-        grammar: grammarMatch ? Math.min(Number(grammarMatch[1]), 10) : 5
+        fluency: 0,
+        technicalAccuracy: 0,
+        grammar: 0,
+        feedback: "Answer incomplete or missing key technical points."
       };
-      
-      console.log("⚠️ Using regex-extracted scores:", evaluation);
     }
 
     return evaluation;
 
   } catch (error) {
     console.error("❌ Error evaluating answer:", error.message);
-    console.error("Stack:", error.stack);
-    
     return {
-      confidence: 5,
-      fluency: 5,
-      technicalAccuracy: 5,
-      grammar: 5
+      fluency: 0,
+      technicalAccuracy: 0,
+      grammar: 0,
+      feedback: "Error evaluating answer. Please try again."
+    };
+  }
+};
+*/
+
+import "dotenv/config";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_KEY);
+
+const model = genAI.getGenerativeModel({
+  model: "gemini-2.0-flash",
+  systemInstruction: `
+You are a strict technical evaluator.
+Evaluate candidate answers ONLY based on correctness, clarity, and completeness.
+Return ONLY valid JSON. No markdown, no explanations.
+  `,
+});
+
+/* Extract JSON safely */
+function extractJSON(text) {
+  return text
+    .replace(/```json/gi, "")
+    .replace(/```/g, "")
+    .trim();
+}
+
+/* Normalize numbers */
+function normalizeScores(obj) {
+  const limit = (n) => {
+    const x = Number(n);
+    return isNaN(x) ? 0 : Math.max(0, Math.min(10, x));
+  };
+
+  return {
+    fluency: limit(obj.fluency),
+    technicalAccuracy: limit(obj.technicalAccuracy),
+    grammar: limit(obj.grammar),
+    feedback: obj.feedback || "Answer incomplete or missing key technical points.",
+  };
+}
+
+/* ⭐ FINAL EVALUATION FUNCTION (same version as generateQuestions) */
+export const evaluateAnswer = async (question, answer) => {
+  try {
+    if (!question || !answer?.trim()) {
+      return {
+        fluency: 0,
+        technicalAccuracy: 0,
+        grammar: 0,
+        feedback: "No answer provided. Candidate did not respond.",
+      };
+    }
+
+    // Nonsense detection
+    const nonsense = [
+      /^(a+|b+|c+|d+)$/i,
+      /^[a-z]{1,3}$/i,
+      /^idk$/i,
+      /no idea/i,
+      /not sure/i,
+      /maybe/i,
+      /can't remember/i,
+    ];
+
+    if (answer.trim().length < 5 || nonsense.some((p) => p.test(answer.trim()))) {
+      return {
+        fluency: 0,
+        technicalAccuracy: 0,
+        grammar: 0,
+        feedback: "Answer invalid or unrelated to the question.",
+      };
+    }
+
+    const prompt = 
+`
+You are a strict technical evaluator.
+
+Your job is to grade the candidate's answer **only** based on correctness, completeness, and clarity — 
+not politeness or effort. Be extremely objective and critical.
+
+Return ONLY a JSON object with these keys:
+- fluency: 0–10
+- technicalAccuracy: 0–10
+- grammar: 0–10
+- feedback: short and correct answer to the question (no remarks, no evaluation, no extra text)
+
+Evaluation Rules:
+1. If the answer is blank, nonsense, irrelevant, off-topic, copied from the question, or includes phrases like:
+   "I don't know", "idk", "no idea", "not sure", "maybe", "can't remember", or any vague hesitation — 
+   give **0 marks** for *all* categories.
+2. If the answer is partially correct but misses major parts of the question → **fluency: 4–6**, 
+   **technicalAccuracy: 3–5**, **grammar: 4–6**.
+3. If the answer is completely correct, clear, and well-written → **8–10** for all.
+4. Do **not** give 5 marks by default. 
+   Only assign marks according to the above rules.
+5. The "feedback" should be the correct and complete answer to the question, not feedback about the user.
+6. Always output a valid JSON only — no markdown, no explanations.
+
+Question: ${question}
+
+Answer: ${answer}
+
+Example response:
+{
+  "fluency": 7,
+  "technicalAccuracy": 6,
+  "grammar": 8,
+  "feedback":  "This field should contain the correct answer to the question."
+`;
+
+    const result = await model.generateContent(prompt);
+    let text = result.response.text().trim();
+
+    const clean = extractJSON(text);
+
+    let parsed;
+    try {
+      parsed = JSON.parse(clean);
+    } catch (err) {
+      console.warn("⚠ JSON Parse Failed. Raw:", text);
+      return {
+        fluency: 0,
+        technicalAccuracy: 0,
+        grammar: 0,
+        feedback: "Answer incomplete or missing key technical points.",
+      };
+    }
+
+    return normalizeScores(parsed);
+  } catch (error) {
+    console.error("❌ Error evaluating answer:", error.message);
+    return {
+      fluency: 0,
+      technicalAccuracy: 0,
+      grammar: 0,
+      feedback: "Error evaluating answer. Please try again.",
     };
   }
 };

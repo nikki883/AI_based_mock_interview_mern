@@ -5,7 +5,6 @@ const performanceSchema = new mongoose.Schema({
     interviewId: { type: String, required: true },
     grammar: { type: Number, required: true },
     technicalAccuracy: { type: Number, required: true },
-    confidence: { type: Number, required: true },
     timestamp: { type: Date, default: Date.now }
 });
 
